@@ -1,1 +1,30 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text-Based Shiny Hunter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Shiny Hunting Simulator</h1>
+        
+        <div class="hunt-controls">
+            <button id="start-hunt">Start Random Hunt</button>
+            <button id="reroll" disabled>Reroll (5s cooldown)</button>
+        </div>
+        
+        <div id="pokemon-display">Select a Pokémon to hunt!</div>
+        
+        <div class="ball-selector" id="ball-selector">
+            <!-- Pokéballs will appear here -->
+        </div>
+        
+        <div class="shiny-dex">
+            <h2>Shiny Dex</h2>
+            <div id="shiny-entries"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
