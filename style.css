@@ -1,1 +1,43 @@
+body {
+    font-family: monospace;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
+}
 
+.container {
+    text-align: center;
+}
+
+#pokemon-display {
+    font-size: 24px;
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-height: 60px;
+}
+
+.shiny {
+    color: gold;
+    font-weight: bold;
+}
+
+.ball-btn {
+    margin: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#reroll:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.shiny-entry {
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    display: inline-block;
+}
