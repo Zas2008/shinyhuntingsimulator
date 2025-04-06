@@ -1,30 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Text-Based Shiny Hunter</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shiny Hunting Simulator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        #pokemon-display {
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-height: 60px;
+        }
+        .shiny {
+            color: gold;
+            font-weight: bold;
+        }
+        .ball-btn {
+            margin: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #reroll:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .shiny-entry {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: inline-block;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Shiny Hunting Simulator</h1>
-        
-        <div class="hunt-controls">
-            <button id="start-hunt">Start Random Hunt</button>
-            <button id="reroll" disabled>Reroll (5s cooldown)</button>
-        </div>
-        
-        <div id="pokemon-display">Select a Pokémon to hunt!</div>
-        
-        <div class="ball-selector" id="ball-selector">
-            <!-- Pokéballs will appear here -->
-        </div>
-        
-        <div class="shiny-dex">
-            <h2>Shiny Dex</h2>
-            <div id="shiny-entries"></div>
-        </div>
+    <h1>Shiny Hunting Simulator</h1>
+    
+    <div class="hunt-controls">
+        <button id="start-hunt">Start Random Hunt</button>
+        <button id="reroll" disabled>Reroll (5s cooldown)</button>
     </div>
     
+    <div id="pokemon-display">Select a Pokémon to hunt!</div>
+    
+    <div id="ball-selector"></div>
+    
+    <div class="shiny-dex">
+        <h2>Shiny Dex</h2>
+        <div id="shiny-entries"></div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
