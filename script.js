@@ -1,85 +1,43 @@
-// Game state
-let currentPokemon = null;
-let isShiny = false;
-let rerollCooldown = false;
-let shinyDex = JSON.parse(localStorage.getItem('shinyDex')) || [];
-
-// DOM elements
 const pokemonDisplay = document.getElementById('pokemon-display');
 const startHuntBtn = document.getElementById('start-hunt');
 const rerollBtn = document.getElementById('reroll');
 const ballSelector = document.getElementById('ball-selector');
 const shinyEntries = document.getElementById('shiny-entries');
 
-// Load data files
-async function loadData() {
-    const pokemonRes = await fetch('data/pokemon.txt');
-    const pokemonText = await pokemonRes.text();
-    const pokemonList = pokemonText.split('\n').map(line => {
-        const [name, isLegendary, baseCatchRate] = line.split(',');
-        return {
-            name: name.trim(),
-            isLegendary: isLegendary === '1',
-            baseCatchRate: parseInt(baseCatchRate)
-        };
-    }).filter(p => p.name);
+let currentPokemon = null;
+let isShiny = false;
+let rerollCooldown = false;
+let shinyDex = JSON.parse(localStorage.getItem('shinyDex')) || [];
 
-    const ballsRes = await fetch('data/pokeballs.txt');
-    const ballsText = await ballsRes.text();
-    const ballsList = ballsText.split('\n').map(line => {
-        const [name, multiplier] = line.split(',');
-        return {
-            name: name.trim(),
-            multiplier: parseFloat(multiplier)
-        };
-    }).filter(b => b.name);
-
-    return { pokemonList, ballsList };
+async function loadPokemonData() {
+    const response = await fetch('data/pokemon.txt');
+    const textData = await response.text();
+    return textData.split('\n')
+        .filter(line => line.trim() !== '')
+        .map(line => {
+            const [name, isLegendary, baseCatchRate] = line.split(',');
+            return {
+                name: name.trim(),
+                isLegendary: isLegendary === '1',
+                baseCatchRate: parseInt(baseCatchRate.trim())
+            };
+        });
 }
 
-// Initialize game
-async function init() {
-    const { pokemonList, ballsList } = await loadData();
-    
-    // Create ball buttons
-    ballsList.forEach(ball => {
-        const btn = document.createElement('button');
-        btn.className = 'ball-btn';
-        btn.textContent = ball.name;
-        btn.onclick = () => attemptCatch(ball);
-        ballSelector.appendChild(btn);
-    });
-    
-    // Set up event listeners
-    startHuntBtn.addEventListener('click', () => startRandomHunt(pokemonList));
-    rerollBtn.addEventListener('click', reroll);
-    
-    renderShinyDex();
+async function loadPokeballData() {
+    const response = await fetch('data/pokeballs.txt');
+    const textData = await response.text();
+    return textData.split('\n')
+        .filter(line => line.trim() !== '')
+        .map(line => {
+            const [name, multiplier] = line.split(',');
+            return {
+                name: name.trim(),
+                multiplier: parseFloat(multiplier.trim())
+            };
+        });
 }
 
-// Start a random hunt
-function startRandomHunt(pokemonList) {
-    const randomIndex = Math.floor(Math.random() * pokemonList.length);
-    currentPokemon = pokemonList[randomIndex];
-    rollForShiny();
-}
-
-// Roll for shiny (1 in 4096 chance)
-function rollForShiny() {
-    isShiny = Math.floor(Math.random() * 4096) === 0;
-    displayPokemon();
-    
-    if (isShiny) {
-        rerollCooldown = true;
-        rerollBtn.disabled = true;
-        setTimeout(() => {
-            rerollCooldown = false;
-            rerollBtn.disabled = false;
-        }, 5000); // 5-second cooldown for shinies
-    }
-}
-
-// Display current Pokémon
 function displayPokemon() {
     let displayText = currentPokemon.name;
     if (isShiny) {
@@ -91,17 +49,34 @@ function displayPokemon() {
     pokemonDisplay.textContent = displayText;
 }
 
-// Attempt to catch the Pokémon
+function rollForShiny() {
+    isShiny = Math.floor(Math.random() * 4096) === 0;
+    displayPokemon();
+    
+    if (isShiny) {
+        rerollCooldown = true;
+        rerollBtn.disabled = true;
+        setTimeout(() => {
+            rerollCooldown = false;
+            rerollBtn.disabled = false;
+        }, 5000);
+    }
+}
+
+function startRandomHunt(pokemonList) {
+    const randomIndex = Math.floor(Math.random() * pokemonList.length);
+    currentPokemon = pokemonList[randomIndex];
+    rollForShiny();
+}
+
 function attemptCatch(ball) {
     if (!currentPokemon) return;
     
-    // Master Ball always catches
     if (ball.multiplier === 255) {
         addToShinyDex(ball.name);
         return;
     }
     
-    // Calculate catch chance
     const catchRate = (currentPokemon.baseCatchRate * ball.multiplier) / 255;
     const success = Math.random() < catchRate;
     
@@ -112,7 +87,6 @@ function attemptCatch(ball) {
     }
 }
 
-// Add to Shiny Dex
 function addToShinyDex(ballName) {
     if (!isShiny) return;
     
@@ -128,7 +102,6 @@ function addToShinyDex(ballName) {
     alert(`Shiny ${currentPokemon.name} caught in ${ballName}!`);
 }
 
-// Render Shiny Dex
 function renderShinyDex() {
     shinyEntries.innerHTML = shinyDex.map(entry => 
         `<div class="shiny-entry">
@@ -138,12 +111,28 @@ function renderShinyDex() {
     ).join('');
 }
 
-// Reroll current Pokémon
 function reroll() {
     if (rerollCooldown) return;
     if (!currentPokemon) return;
     rollForShiny();
 }
 
-// Start the game
-init();
+async function init() {
+    const pokemonList = await loadPokemonData();
+    const ballsList = await loadPokeballData();
+    
+    ballsList.forEach(ball => {
+        const btn = document.createElement('button');
+        btn.className = 'ball-btn';
+        btn.textContent = ball.name;
+        btn.addEventListener('click', () => attemptCatch(ball));
+        ballSelector.appendChild(btn);
+    });
+    
+    startHuntBtn.addEventListener('click', () => startRandomHunt(pokemonList));
+    rerollBtn.addEventListener('click', reroll);
+    
+    renderShinyDex();
+}
+
+window.addEventListener('DOMContentLoaded', init);
